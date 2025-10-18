@@ -1,10 +1,10 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
 import { users as mockUsers } from '../data/mockData';
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   favorites: string[];
   login: (email: string) => boolean;
   logout: () => void;
@@ -17,8 +17,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
+    // Simulate checking for a user in localStorage
     try {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
@@ -30,6 +32,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error("Failed to parse user from localStorage", error);
       localStorage.removeItem('user');
+    } finally {
+      setLoading(false); // Finished loading
     }
   }, []);
 
@@ -65,7 +69,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isFavorite = (channelId: string) => favorites.includes(channelId);
 
   return (
-    <AuthContext.Provider value={{ user, favorites, login, logout, toggleFavorite, isFavorite }}>
+    <AuthContext.Provider value={{ user, loading, favorites, login, logout, toggleFavorite, isFavorite }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,5 @@
-// Fix: Provide full content for types.ts to resolve module errors.
+// types.ts
+
 export interface Program {
   title: string;
   startTime: string;
@@ -8,17 +9,13 @@ export interface Program {
 export interface Channel {
   id: string;
   name: string;
+  description?: string;
   logo: string;
   isLive: boolean;
   streamUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   currentProgram: Program;
   nextProgram: Program;
-}
-
-export interface Category {
-  id: string;
-  name: string;
 }
 
 export interface User {
@@ -26,4 +23,9 @@ export interface User {
   name: string;
   email: string;
   isAdmin: boolean;
+}
+
+export interface Category {
+  id: string;
+  name: string;
 }

@@ -1,26 +1,29 @@
-
 import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const auth = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    // In a real app, you'd validate password too.
-    if (!auth.login(email)) {
-      setError('Invalid email. Try "alex@example.com"');
-    } else {
+    
+    // In this mock setup, any non-empty password is fine
+    const success = login(email);
+
+    if (success) {
       navigate(from, { replace: true });
+    } else {
+      setError(t('loginFailed'));
     }
   };
 
@@ -28,43 +31,39 @@ export const LoginPage: React.FC = () => {
     <div className="flex-grow flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <form onSubmit={handleSubmit} className="bg-brand-surface shadow-2xl rounded-lg px-8 pt-6 pb-8 mb-4">
-          <h2 className="text-2xl font-bold text-center text-white mb-6">Login to LiveStream TV</h2>
+          <h1 className="text-3xl font-bold text-center mb-6">{t('loginToYourAccount')}</h1>
           {error && <p className="bg-red-500/20 text-red-400 text-sm p-3 rounded mb-4 text-center">{error}</p>}
           <div className="mb-4">
             <label className="block text-brand-text-dim text-sm font-bold mb-2" htmlFor="email">
-              Email Address
+              {t('emailAddress')}
             </label>
             <input
-              className="shadow appearance-none border border-slate-600 rounded w-full py-2 px-3 bg-slate-800 text-brand-text leading-tight focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="shadow appearance-none border border-slate-700 rounded w-full py-2 px-3 bg-slate-800 text-brand-text leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-brand-primary"
               id="email"
               type="email"
-              placeholder="alex@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="alex@example.com"
               required
             />
           </div>
           <div className="mb-6">
             <label className="block text-brand-text-dim text-sm font-bold mb-2" htmlFor="password">
-              Password
+              {t('password')}
             </label>
             <input
-              className="shadow appearance-none border border-slate-600 rounded w-full py-2 px-3 bg-slate-800 text-brand-text mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="shadow appearance-none border border-slate-700 rounded w-full py-2 px-3 bg-slate-800 text-brand-text mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-brand-primary"
               id="password"
               type="password"
               placeholder="******************"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
             />
-             <p className="text-xs text-brand-secondary">Any password will work for this demo.</p>
           </div>
           <div className="flex items-center justify-between">
             <button
-              className="w-full bg-brand-primary hover:bg-sky-400 text-brand-bg font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors"
+              className="w-full bg-brand-primary hover:bg-sky-400 text-brand-bg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors"
               type="submit"
             >
-              Sign In
+              {t('login')}
             </button>
           </div>
         </form>

@@ -3,47 +3,55 @@ import { useAuth } from '../hooks/useAuth';
 import { useChannels } from '../hooks/useChannels';
 import { ChannelCard } from '../components/ChannelCard';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const FavoritesPage: React.FC = () => {
-    const { user, favorites } = useAuth();
-    const { channels, loading, error } = useChannels();
-    const navigate = useNavigate();
+  const { user, favorites, loading: authLoading } = useAuth();
+  const { channels, loading: channelsLoading } = useChannels();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  
+  const favoriteChannels = channels.filter(c => favorites.includes(c.id));
 
-    if (!user) {
-        return (
-            <div className="container mx-auto px-4 py-8 text-center">
-                <h2 className="text-2xl font-bold text-white mb-4">Please Log In</h2>
-                <p className="text-brand-text-dim mb-6">You need to be logged in to view your favorite channels.</p>
-                <button onClick={() => navigate('/login')} className="inline-flex items-center gap-2 bg-brand-primary text-brand-bg font-bold py-2 px-4 rounded-lg hover:bg-sky-400 transition-colors">
-                    Go to Login
-                </button>
-            </div>
-        );
+  const renderContent = () => {
+    if (authLoading || channelsLoading) {
+      return <div className="text-center"><div className="loader inline-block"></div></div>;
     }
     
-    const favoriteChannels = channels.filter(channel => favorites.includes(channel.id));
+    if (!user) {
+      return (
+        <div className="text-center p-8 bg-brand-surface rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4">{t('loginToSeeFavorites')}</h2>
+          <button onClick={() => navigate('/login')} className="px-6 py-2 bg-brand-primary text-brand-bg rounded-md font-semibold hover:bg-sky-400 transition-colors">
+            {t('goToLogin')}
+          </button>
+        </div>
+      );
+    }
+    
+    if (favoriteChannels.length === 0) {
+      return (
+        <div className="text-center p-8 bg-brand-surface rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4">{t('noFavoritesMessage')}</h2>
+        </div>
+      );
+    }
 
     return (
-        <main className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-white mb-6">My Favorite Channels</h1>
-            {loading ? (
-                 <div className="text-center text-brand-text-dim py-10">Loading favorites...</div>
-            ) : error ? (
-                 <div className="text-center text-red-400 py-10">Error: Could not load channels.</div>
-            ) : favoriteChannels.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-                    {favoriteChannels.map(channel => (
-                        <ChannelCard key={channel.id} channel={channel} />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-16 bg-brand-surface rounded-lg">
-                    <h2 className="text-xl font-semibold text-white">No Favorites Yet</h2>
-                    <p className="text-brand-text-dim mt-2">
-                        Click the star icon on a channel to add it to your favorites.
-                    </p>
-                </div>
-            )}
-        </main>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+        {favoriteChannels.map(channel => (
+          <ChannelCard key={channel.id} channel={channel} />
+        ))}
+      </div>
     );
+  }
+
+  return (
+    <main className="flex-grow py-8">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-8">{t('myFavoriteChannels')}</h1>
+        {renderContent()}
+      </div>
+    </main>
+  );
 };

@@ -1,44 +1,77 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-g" />
+    <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LiveStream TV</title>
+    <title>BEINSPORTSMAROC - Live TV Streaming</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              'brand-bg': '#0F172A',
-              'brand-surface': '#1E293B',
-              'brand-primary': '#38BDF8',
-              'brand-secondary': '#64748B',
-              'brand-text': '#E2E8F0',
-              'brand-text-dim': '#94A3B8',
+              'brand-bg': '#121212', // Dark background
+              'brand-surface': '#2a2a2a', // Card and surface background
+              'brand-primary': '#be1770', // beIN SPORTS Purple/Magenta
+              'brand-secondary': '#00a0e1', // beIN SPORTS Blue Accent
+              'brand-text': '#ffffff', // White text
+              'brand-text-dim': '#a9a9a9', // Dimmed/secondary text
             },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            }
-          }
-        }
+            aspectRatio: {
+              '16/7': '16 / 7',
+            },
+          },
+        },
       }
     </script>
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <style>
+      /* Basic loader for auth checks and i18n loading */
+      .loader {
+        border: 4px solid #4a4a4a; /* Dark grey */
+        border-top: 4px solid #be1770; /* Primary color */
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      /* Custom scrollbar for carousels */
+      .carousel-scrollbar::-webkit-scrollbar {
+        height: 8px;
+      }
+      .carousel-scrollbar::-webkit-scrollbar-track {
+        background: #2a2a2a;
+        border-radius: 10px;
+      }
+      .carousel-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #be1770;
+        border-radius: 10px;
+        border: 2px solid #2a2a2a;
+      }
+    </style>
   <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4"
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.546.0",
+    "i18next": "https://aistudiocdn.com/i18next@^25.6.0",
+    "react-i18next": "https://aistudiocdn.com/react-i18next@^16.1.0",
+    "i18next-http-backend": "https://aistudiocdn.com/i18next-http-backend@^3.0.2",
+    "i18next-browser-languagedetector": "https://aistudiocdn.com/i18next-browser-languagedetector@^8.2.0"
   }
 }
 </script>
 </head>
-  <body class="bg-brand-bg text-brand-text font-sans">
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

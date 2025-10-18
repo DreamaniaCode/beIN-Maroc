@@ -1,41 +1,158 @@
-// Fix: Provide full content for ChannelForm.tsx to resolve module errors.
-import React, { useState } from 'react';
-import { Channel } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { useChannels } from '../../hooks/useChannels';
+import { Channel, Program } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 interface ChannelFormProps {
-    channel?: Channel | null;
-    onSubmit: (channelData: Partial<Channel>) => void;
-    onCancel: () => void;
+  existingChannel: Channel | null;
+  onFormSubmit: () => void;
 }
 
-export const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSubmit, onCancel }) => {
-    const [name, setName] = useState(channel?.name || '');
+const initialProgramState: Program = { title: '', startTime: '', endTime: '' };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit({ ...channel, name });
-    };
+const initialState: Omit<Channel, 'id'> = {
+  name: '',
+  description: '',
+  logo: '',
+  isLive: false,
+  streamUrl: '',
+  categoryIds: [],
+  currentProgram: { ...initialProgramState },
+  nextProgram: { ...initialProgramState },
+};
 
-    return (
-        <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-lg">
-            <h3 className="text-lg font-bold mb-4 text-white">{channel ? 'Edit Channel' : 'Add Channel'}</h3>
-            <div className="mb-4">
-                <label className="block text-brand-text-dim text-sm font-bold mb-2" htmlFor="channel-name">
-                    Channel Name
-                </label>
-                <input
-                    id="channel-name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="shadow appearance-none border border-slate-600 rounded w-full py-2 px-3 bg-slate-700 text-brand-text leading-tight focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                />
+export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFormSubmit }) => {
+  const [formData, setFormData] = useState(initialState);
+  const { addChannel, updateChannel, categories } = useChannels();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (existingChannel) {
+      setFormData(existingChannel);
+    } else {
+      setFormData(initialState);
+    }
+  }, [existingChannel]);
+  
+  // FIX: Replaced 'any' cast with a type guard for type safety.
+  // This improves type safety and likely resolves a TypeScript inference issue
+  // that was causing an error to be reported on the wrong line.
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.currentTarget;
+    
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      if (parent === 'currentProgram' || parent === 'nextProgram') {
+        setFormData(prev => ({
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: value,
+          }
+        }));
+      }
+    } else {
+      if (e.currentTarget.type === 'checkbox' && e.currentTarget instanceof HTMLInputElement) {
+        setFormData(prev => ({
+          ...prev,
+          [name]: e.currentTarget.checked
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      }
+    }
+  };
+  
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // FIX: Explicitly type `option` as HTMLOptionElement to resolve a potential type inference issue.
+    const selectedOptions = Array.from(e.currentTarget.selectedOptions, (option: HTMLOptionElement) => option.value);
+    setFormData(prev => ({ ...prev, categoryIds: selectedOptions }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (existingChannel) {
+      updateChannel(existingChannel.id, formData);
+    } else {
+      addChannel(formData);
+    }
+    onFormSubmit();
+  };
+
+  const renderTextField = (name: keyof Omit<Channel, 'id' | 'isLive' | 'categoryIds' | 'currentProgram' | 'nextProgram'>, label: string) => (
+    <div>
+        <label htmlFor={name} className="block text-sm font-medium text-brand-text-dim mb-1">{label}</label>
+        <input type="text" name={name} id={name} value={formData[name] || ''} onChange={handleChange} className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"/>
+    </div>
+  );
+
+  const renderProgramFields = (programKey: 'currentProgram' | 'nextProgram', title: string) => (
+    <div className="bg-slate-800 p-4 rounded-lg">
+        <h4 className="font-semibold mb-2">{title}</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label className="block text-sm font-medium mb-1">{t('title')}</label>
+                <input type="text" name={`${programKey}.title`} value={formData[programKey].title} onChange={handleChange} className="w-full bg-slate-900 border border-slate-600 rounded-md p-2"/>
             </div>
-            {/* Additional form fields would go here */}
-            <div className="flex justify-end gap-2 mt-6">
-                <button type="button" onClick={onCancel} className="bg-slate-600 hover:bg-slate-500 text-white font-bold px-4 py-2 rounded transition-colors">Cancel</button>
-                <button type="submit" className="bg-brand-primary hover:bg-sky-400 text-brand-bg font-bold px-4 py-2 rounded transition-colors">Save</button>
+            <div>
+                <label className="block text-sm font-medium mb-1">{t('startTime')}</label>
+                <input type="text" name={`${programKey}.startTime`} value={formData[programKey].startTime} onChange={handleChange} className="w-full bg-slate-900 border border-slate-600 rounded-md p-2"/>
             </div>
-        </form>
-    );
+            <div>
+                <label className="block text-sm font-medium mb-1">{t('endTime')}</label>
+                <input type="text" name={`${programKey}.endTime`} value={formData[programKey].endTime} onChange={handleChange} className="w-full bg-slate-900 border border-slate-600 rounded-md p-2"/>
+            </div>
+        </div>
+    </div>
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {renderTextField('name', t('channelName'))}
+        {renderTextField('logo', t('logoUrl'))}
+      </div>
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-brand-text-dim mb-1">{t('channelDescription')}</label>
+        <textarea name="description" id="description" value={formData.description || ''} onChange={handleChange} rows={3} className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"></textarea>
+      </div>
+      {renderTextField('streamUrl', t('streamUrl'))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label htmlFor="categoryIds" className="block text-sm font-medium text-brand-text-dim mb-1">{t('categories')}</label>
+            <select
+                id="categoryIds"
+                name="categoryIds"
+                multiple
+                value={formData.categoryIds}
+                onChange={handleCategoryChange}
+                className="w-full h-32 bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"
+            >
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+            </select>
+        </div>
+        <div>
+            <label htmlFor="status" className="block text-sm font-medium text-brand-text-dim mb-1">{t('status')}</label>
+            <div className="flex items-center space-x-2 p-2 bg-slate-800 border border-slate-600 rounded-md">
+                <input type="checkbox" id="isLive" name="isLive" checked={formData.isLive} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"/>
+                <label htmlFor="isLive" className="font-medium">{t('live')}</label>
+            </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {renderProgramFields('currentProgram', t('currentProgram'))}
+        {renderProgramFields('nextProgram', t('nextProgram'))}
+      </div>
+
+      <div className="flex justify-end pt-4">
+        <button type="submit" className="bg-brand-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-sky-400 transition-colors">
+          {t('saveChanges')}
+        </button>
+      </div>
+    </form>
+  );
 };

@@ -1,4 +1,3 @@
-// Fix: Provide full content for ChannelCarousel.tsx to resolve module errors.
 import React from 'react';
 import { Channel } from '../../types';
 import { ChannelCard } from '../ChannelCard';
@@ -14,12 +13,15 @@ export const ChannelCarousel: React.FC<ChannelCarouselProps> = ({ title, channel
   }
   
   return (
-    <div className="my-8">
+    <div className="mb-10">
       <h2 className="text-2xl font-bold text-white mb-4">{title}</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+      <div className="flex overflow-x-auto space-x-4 pb-4 carousel-scrollbar">
         {channels.map(channel => (
-          <ChannelCard key={channel.id} channel={channel} />
+          <div key={channel.id} className="flex-shrink-0 w-64 sm:w-72">
+            <ChannelCard channel={channel} />
+          </div>
         ))}
+        <div className="flex-shrink-0 w-1"></div>
       </div>
     </div>
   );
