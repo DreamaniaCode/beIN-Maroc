@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const TVIcon = () => (
@@ -17,6 +16,8 @@ const UserIcon = () => (
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const navLinkClasses = "px-3 py-2 rounded-md text-sm font-medium text-brand-text-dim hover:bg-brand-surface hover:text-brand-text transition-colors";
   const activeNavLinkClasses = "bg-slate-700 text-brand-text";
@@ -26,14 +27,14 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-6">
-                 <Link to="/" className="flex items-center gap-3 flex-shrink-0">
+                 <button onClick={() => navigate('/')} className="flex items-center gap-3 flex-shrink-0">
                     <TVIcon />
                     <h1 className="text-2xl font-bold tracking-tight text-white hidden sm:block">LiveStream TV</h1>
-                </Link>
+                </button>
                 <nav className="hidden md:flex items-baseline space-x-4">
-                    <NavLink to="/" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}`: navLinkClasses} end>Channels</NavLink>
-                    <NavLink to="/favorites" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}`: navLinkClasses}>Favorites</NavLink>
-                    <NavLink to="/search" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}`: navLinkClasses}>Search</NavLink>
+                    <button onClick={() => navigate('/')} className={location.pathname === '/' ? `${navLinkClasses} ${activeNavLinkClasses}`: navLinkClasses}>Channels</button>
+                    <button onClick={() => navigate('/favorites')} className={location.pathname === '/favorites' ? `${navLinkClasses} ${activeNavLinkClasses}`: navLinkClasses}>Favorites</button>
+                    <button onClick={() => navigate('/search')} className={location.pathname === '/search' ? `${navLinkClasses} ${activeNavLinkClasses}`: navLinkClasses}>Search</button>
                 </nav>
             </div>
             <div className="flex items-center gap-4">
@@ -46,7 +47,7 @@ export const Header: React.FC = () => {
                     <button onClick={logout} className="px-3 py-2 rounded-md text-sm font-medium bg-brand-secondary/50 hover:bg-brand-secondary/80 transition-colors">Logout</button>
                    </>
                ) : (
-                    <Link to="/login" className="px-3 py-2 rounded-md text-sm font-medium bg-brand-primary text-brand-bg hover:bg-sky-400 transition-colors">Login</Link>
+                    <button onClick={() => navigate('/login')} className="px-3 py-2 rounded-md text-sm font-medium bg-brand-primary text-brand-bg hover:bg-sky-400 transition-colors">Login</button>
                )}
             </div>
         </div>

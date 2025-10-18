@@ -1,49 +1,51 @@
-import React, { useState, useMemo } from 'react';
-import { categories } from '../data/mockData'; // Categories are static, so we keep this
+// Fix: Provide full content for HomePage.tsx to resolve module errors.
+import React, { useState, useEffect } from 'react';
 import { useChannels } from '../hooks/useChannels';
-import { ChannelCard } from '../components/ChannelCard';
 import { CategoryTabs } from '../components/CategoryTabs';
+import { ChannelCard } from '../components/ChannelCard';
+import { SkeletonLoader } from '../components/home/SkeletonLoader';
 
 export const HomePage: React.FC = () => {
-  const [activeCategoryId, setActiveCategoryId] = useState('all');
-  const { channels, loading, error } = useChannels();
+  const { channels, categories, loading, error } = useChannels();
+  const [activeCategoryId, setActiveCategoryId] = useState<string>('');
 
-  const filteredChannels = useMemo(() => {
-    if (activeCategoryId === 'all') {
-      return channels;
+  useEffect(() => {
+    if (categories.length > 0 && !activeCategoryId) {
+      setActiveCategoryId(categories[0].id);
     }
-    return channels.filter(channel => channel.categoryIds.includes(activeCategoryId));
-  }, [activeCategoryId, channels]);
+  }, [categories, activeCategoryId]);
 
-  const renderContent = () => {
-    if (loading) {
-      return <div className="text-center text-brand-text-dim py-10">Loading channels...</div>;
-    }
-    if (error) {
-      return <div className="text-center text-red-400 py-10">Error: Could not load channels. {error}</div>;
-    }
-    if (filteredChannels.length === 0) {
-        return <div className="text-center text-brand-text-dim py-10">No channels found in this category.</div>
-    }
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-        {filteredChannels.map(channel => (
-          <ChannelCard key={channel.id} channel={channel} />
-        ))}
-      </div>
-    );
-  };
+  const filteredChannels = channels.filter(channel => channel.categoryId === activeCategoryId);
 
   return (
-    <main>
-      <CategoryTabs 
+    <div>
+      <CategoryTabs
         categories={categories}
         activeCategoryId={activeCategoryId}
         onSelectCategory={setActiveCategoryId}
       />
-      <div className="container mx-auto px-4 py-8">
-        {renderContent()}
-      </div>
-    </main>
+      <main className="container mx-auto px-4 py-8">
+        {loading ? (
+          <SkeletonLoader />
+        ) : error ? (
+          <div className="text-center text-red-400 py-10">{error}</div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+            {filteredChannels.length > 0 ? (
+              filteredChannels.map(channel => (
+                <ChannelCard key={channel.id} channel={channel} />
+              ))
+            ) : (
+                <div className="col-span-full text-center py-16 bg-brand-surface rounded-lg">
+                    <h2 className="text-xl font-semibold text-white">No Channels Found</h2>
+                    <p className="text-brand-text-dim mt-2">
+                        There are no channels available in this category.
+                    </p>
+                </div>
+            )}
+          </div>
+        )}
+      </main>
+    </div>
   );
 };

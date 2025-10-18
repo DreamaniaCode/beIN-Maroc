@@ -2,20 +2,21 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useChannels } from '../hooks/useChannels';
 import { ChannelCard } from '../components/ChannelCard';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const FavoritesPage: React.FC = () => {
     const { user, favorites } = useAuth();
     const { channels, loading, error } = useChannels();
+    const navigate = useNavigate();
 
     if (!user) {
         return (
             <div className="container mx-auto px-4 py-8 text-center">
                 <h2 className="text-2xl font-bold text-white mb-4">Please Log In</h2>
                 <p className="text-brand-text-dim mb-6">You need to be logged in to view your favorite channels.</p>
-                <Link to="/login" className="inline-flex items-center gap-2 bg-brand-primary text-brand-bg font-bold py-2 px-4 rounded-lg hover:bg-sky-400 transition-colors">
+                <button onClick={() => navigate('/login')} className="inline-flex items-center gap-2 bg-brand-primary text-brand-bg font-bold py-2 px-4 rounded-lg hover:bg-sky-400 transition-colors">
                     Go to Login
-                </Link>
+                </button>
             </div>
         );
     }
