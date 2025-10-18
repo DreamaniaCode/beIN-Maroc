@@ -1,4 +1,3 @@
-// FIX: Implemented the missing AdminLayout component.
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Tv, Users, CalendarClock, Home } from 'lucide-react';
@@ -26,7 +25,6 @@ export const AdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text flex">
-      {/* Sidebar */}
       <aside className="w-64 bg-brand-surface flex-shrink-0 p-4 flex flex-col justify-between">
         <div>
           <h2 className="text-xl font-bold px-4 mb-6">{t('adminPanel')}</h2>
@@ -47,7 +45,6 @@ export const AdminLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-8 overflow-y-auto">
         <Outlet />
       </main>

@@ -1,4 +1,3 @@
-// FIX: Implemented missing mock data for users, categories, and channels.
 import { User, Channel, Category, Program } from '../types';
 
 export const users: User[] = [
@@ -14,19 +13,25 @@ export const categories: Category[] = [
   { id: 'c5', name: 'Kids' },
 ];
 
+const formatTime24h = (date: Date): string => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+};
+
 const generateProgram = (title: string, startHour: number, description: string): Program => {
     const startTime = new Date();
     startTime.setHours(startHour, 0, 0, 0);
     const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // 1 hour duration
     return {
         title,
-        startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        startTime: formatTime24h(startTime),
+        endTime: formatTime24h(endTime),
         description,
     };
 };
 
-export const channels: Channel[] = [
+export const channels: Omit<Channel, 'currentProgram' | 'nextProgram'>[] = [
   {
     id: 'ch1',
     name: 'Global News',
@@ -35,8 +40,6 @@ export const channels: Channel[] = [
     isLive: true,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c1'],
-    currentProgram: generateProgram('World Report', 10, 'Live coverage of global events.'),
-    nextProgram: generateProgram('Business Today', 11, 'The latest financial market updates.'),
   },
   {
     id: 'ch2',
@@ -46,8 +49,6 @@ export const channels: Channel[] = [
     isLive: true,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c2'],
-    currentProgram: generateProgram('Championship Finals', 10, 'The final match of the season.'),
-    nextProgram: generateProgram('Sports Talk', 11, 'Post-game analysis and discussion.'),
   },
   {
     id: 'ch3',
@@ -57,8 +58,6 @@ export const channels: Channel[] = [
     isLive: false,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c3', 'c4'],
-    currentProgram: generateProgram('The Galactic Adventure', 9, 'A sci-fi epic across the stars.'),
-    nextProgram: generateProgram('Comedy Hour', 11, 'A hilarious stand-up special.'),
   },
   {
     id: 'ch4',
@@ -68,8 +67,6 @@ export const channels: Channel[] = [
     isLive: true,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c4'],
-    currentProgram: generateProgram('Red Carpet Live', 10, 'Live from the movie premiere.'),
-    nextProgram: generateProgram('Top 10 Countdown', 11, 'The week\'s hottest celebrity news.'),
   },
   {
     id: 'ch5',
@@ -79,8 +76,6 @@ export const channels: Channel[] = [
     isLive: false,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c5'],
-    currentProgram: generateProgram('Cartoon Capers', 8, 'A collection of funny cartoons.'),
-    nextProgram: generateProgram('Science for Kids', 9, 'Exploring the wonders of science.'),
   },
   {
     id: 'ch6',
@@ -90,8 +85,6 @@ export const channels: Channel[] = [
     isLive: false,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c1', 'c4'],
-    currentProgram: generateProgram('Ancient Empires', 12, 'The rise and fall of Rome.'),
-    nextProgram: generateProgram('The World at War', 13, 'A deep dive into WWII.'),
   },
   {
     id: 'ch7',
@@ -101,8 +94,6 @@ export const channels: Channel[] = [
     isLive: true,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c4'],
-    currentProgram: generateProgram('Master Chef Challenge', 18, 'Amateur chefs battle it out.'),
-    nextProgram: generateProgram('Street Food Diaries', 19, 'Exploring the best street food.'),
   },
   {
     id: 'ch8',
@@ -112,8 +103,6 @@ export const channels: Channel[] = [
     isLive: false,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c1'],
-    currentProgram: generateProgram('Ocean Giants', 15, 'Journey with whales and sharks.'),
-    nextProgram: generateProgram('The Amazon Rainforest', 16, 'Secrets of the jungle.'),
   },
   {
     id: 'ch9',
@@ -123,8 +112,6 @@ export const channels: Channel[] = [
     isLive: false,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c3'],
-    currentProgram: generateProgram('Starlight Voyager', 20, 'A spaceship crew explores the unknown.'),
-    nextProgram: generateProgram('Cyber City 2099', 21, 'A dystopian future thriller.'),
   },
   {
     id: 'ch10',
@@ -134,7 +121,5 @@ export const channels: Channel[] = [
     isLive: true,
     streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     categoryIds: ['c4'],
-    currentProgram: generateProgram('Top 40 Hits', 16, 'The biggest songs right now.'),
-    nextProgram: generateProgram('Rock Legends Live', 17, 'A classic concert from the archives.'),
   },
 ];

@@ -9,18 +9,18 @@ export const LanguageSwitcher: React.FC = () => {
   };
 
   const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'ar', name: 'العربية' },
+    { code: 'en', name: 'EN' },
+    { code: 'ar', name: 'AR' },
   ];
 
   return (
-    <div className="flex items-center space-x-2 rtl:space-x-reverse bg-brand-surface rounded-full p-1">
+    <div className="flex items-center space-x-1 rtl:space-x-reverse bg-brand-surface rounded-full p-1">
       {languages.map((lang) => (
         <button
           key={lang.code}
           onClick={() => changeLanguage(lang.code)}
           className={`px-3 py-1 text-sm font-semibold rounded-full transition-colors ${
-            i18n.language === lang.code
+            i18n.language.startsWith(lang.code)
               ? 'bg-brand-primary text-white'
               : 'text-brand-text-dim hover:bg-slate-700'
           }`}

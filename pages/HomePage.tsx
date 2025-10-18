@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { useChannels } from '../hooks/useChannels';
 import { CategoryTabs } from '../components/CategoryTabs';
@@ -15,7 +14,6 @@ export const HomePage: React.FC = () => {
 
   const featuredChannel = useMemo(() => {
     if (channels.length === 0) return null;
-    // Simple logic: feature the first "live" channel, or just the first channel.
     return channels.find(c => c.isLive) || channels[0];
   }, [channels]);
 
@@ -30,11 +28,9 @@ export const HomePage: React.FC = () => {
 
   if (loading) {
     return (
-      <main className="flex-grow py-8">
-        <div className="container mx-auto px-4">
-          <SkeletonLoader />
-        </div>
-      </main>
+      <div className="container mx-auto px-4 py-8">
+        <SkeletonLoader />
+      </div>
     );
   }
 
@@ -45,8 +41,7 @@ export const HomePage: React.FC = () => {
   const allCategories = [{ id: 'all', name: t('allChannels') }, ...categories];
 
   return (
-    <main className="flex-grow">
-      {/* Hero Section */}
+    <>
       {featuredChannel && (
          <div className="mb-8">
             <HeroChannel channel={featuredChannel} />
@@ -54,10 +49,8 @@ export const HomePage: React.FC = () => {
       )}
       
       <div className="container mx-auto px-4 py-8">
-        {/* Live Channels Carousel */}
         <ChannelCarousel title={t('liveNow')} channels={liveChannels} />
 
-        {/* Category Tabs & Grid */}
         <div className="sticky top-16 bg-brand-bg z-30 py-4">
             <CategoryTabs categories={allCategories} activeCategoryId={activeCategoryId} onSelectCategory={setActiveCategoryId} />
         </div>
@@ -77,6 +70,6 @@ export const HomePage: React.FC = () => {
           )}
         </div>
       </div>
-    </main>
+    </>
   );
 };

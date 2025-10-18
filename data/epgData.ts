@@ -1,9 +1,14 @@
-// FIX: Implemented missing mock Electronic Program Guide (EPG) data.
 import { Program } from '../types';
 
 interface EpgData {
   [channelId: string]: Program[];
 }
+
+const formatTime24h = (date: Date): string => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+};
 
 const generateEpgForChannel = (channelName: string, themes: string[]): Program[] => {
     const programs: Program[] = [];
@@ -11,12 +16,12 @@ const generateEpgForChannel = (channelName: string, themes: string[]): Program[]
         const themeIndex = Math.floor(Math.random() * themes.length);
         const startTime = new Date();
         startTime.setHours(i, 0, 0, 0);
-        const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+        const endTime = new Date(startTime.getTime() + 59 * 60 * 1000); // 59 minute duration to avoid overlap
         
         programs.push({
             title: `${themes[themeIndex]} Hour on ${channelName}`,
-            startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            startTime: formatTime24h(startTime),
+            endTime: formatTime24h(endTime),
             description: `An hour of exciting content about ${themes[themeIndex].toLowerCase()}.`,
         });
     }

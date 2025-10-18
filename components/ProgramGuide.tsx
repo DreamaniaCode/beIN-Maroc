@@ -1,16 +1,23 @@
-// FIX: Implemented the missing ProgramGuide component.
 import React from 'react';
-import { Channel } from '../types';
-import { useEpg } from '../hooks/useEpg';
+import { Program } from '../types';
 import { useTranslation } from 'react-i18next';
 
 interface ProgramGuideProps {
-  channel: Channel;
+  programs: Program[];
+  loading: boolean;
+  error: string | null;
 }
 
-export const ProgramGuide: React.FC<ProgramGuideProps> = ({ channel }) => {
-  const { programs, loading, error } = useEpg(channel.id);
+export const ProgramGuide: React.FC<ProgramGuideProps> = ({ programs, loading, error }) => {
   const { t } = useTranslation();
+
+  const formatDisplayTime = (timeStr: string): string => {
+      if (!timeStr || !timeStr.includes(':')) return '';
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date.toLocaleTimeString(navigator.language, { hour: 'numeric', minute: '2-digit' });
+  };
 
   return (
     <div className="bg-brand-surface p-4 rounded-lg shadow-lg h-full">
@@ -20,10 +27,10 @@ export const ProgramGuide: React.FC<ProgramGuideProps> = ({ channel }) => {
       {!loading && !error && (
         <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
           {programs.length > 0 ? (
-            programs.map((program, index) => (
+            programs.slice(0, 10).map((program, index) => (
               <div key={index} className="text-sm">
                 <p className="font-semibold text-brand-text">{program.title}</p>
-                <p className="text-xs text-brand-text-dim">{program.startTime} - {program.endTime}</p>
+                <p className="text-xs text-brand-text-dim">{formatDisplayTime(program.startTime)} - {formatDisplayTime(program.endTime)}</p>
               </div>
             ))
           ) : (

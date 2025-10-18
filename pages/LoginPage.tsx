@@ -11,16 +11,13 @@ export const LoginPage: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
-  const from = location.state?.from?.pathname || '/';
+  const from = (location.state as any)?.from?.pathname || '/';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
-    // In this mock setup, any non-empty password is fine
-    const success = login(email);
-
-    if (success) {
+    if (login(email)) {
       navigate(from, { replace: true });
     } else {
       setError(t('loginFailed'));
@@ -57,10 +54,11 @@ export const LoginPage: React.FC = () => {
               type="password"
               placeholder="******************"
             />
+             <p className="text-xs text-brand-text-dim">Hint: Use 'alex@example.com' for admin or 'jane@example.com' for user. Any password will work.</p>
           </div>
           <div className="flex items-center justify-between">
             <button
-              className="w-full bg-brand-primary hover:bg-sky-400 text-brand-bg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors"
+              className="w-full bg-brand-primary hover:bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors"
               type="submit"
             >
               {t('login')}

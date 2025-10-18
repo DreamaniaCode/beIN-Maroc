@@ -1,6 +1,6 @@
-// FIX: Implemented the main App component with a clearer routing structure.
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { HomePage } from './pages/HomePage';
 import { ChannelPage } from './pages/ChannelPage';
 import { LoginPage } from './pages/LoginPage';
@@ -15,6 +15,13 @@ import { ManageUsersPage } from './pages/admin/ManageUsersPage';
 import { ManageSchedulePage } from './pages/admin/ManageSchedulePage';
 
 const App: React.FC = () => {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+    document.documentElement.dir = i18n.dir(i18n.language);
+  }, [i18n, i18n.language]);
+
   return (
     <Routes>
       {/* Public Routes */}

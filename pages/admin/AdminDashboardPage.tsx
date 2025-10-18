@@ -1,6 +1,6 @@
 import React from 'react';
 import { useChannels } from '../../hooks/useChannels';
-import { users } from '../../data/mockData'; // In a real app, this would come from a hook/API
+import { users } from '../../data/mockData';
 import { useTranslation } from 'react-i18next';
 import { Tv, Signal, Users } from 'lucide-react';
 
@@ -12,7 +12,7 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => (
     <div className="bg-brand-surface p-6 rounded-lg flex items-center space-x-4 rtl:space-x-reverse">
-        <div className="bg-brand-primary p-3 rounded-full">
+        <div className="bg-brand-primary/20 text-brand-primary p-3 rounded-full">
             {icon}
         </div>
         <div>
@@ -41,9 +41,6 @@ export const AdminDashboardPage: React.FC = () => {
                 <StatCard title={t('liveNow')} value={liveChannelsCount} icon={<Signal size={24} />} />
                 <StatCard title={t('registeredUsers')} value={totalUsersCount} icon={<Users size={24} />} />
             </div>
-
-            {/* In a real dashboard, you would add more components here */}
-            {/* For example: charts, recent activity, etc. */}
         </div>
     );
 };

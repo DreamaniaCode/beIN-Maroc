@@ -12,9 +12,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
     let hls: Hls | null = null;
     const videoElement = videoRef.current;
 
-    if (!videoElement) {
-      return;
-    }
+    if (!videoElement) return;
 
     if (Hls.isSupported()) {
       hls = new Hls();
@@ -23,15 +21,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         videoElement.play().catch(error => console.error("Autoplay was prevented:", error));
       });
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          console.error('Fatal HLS error:', data);
+        }
+      });
     } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-      // Native HLS support (e.g., Safari)
       videoElement.src = src;
       videoElement.addEventListener('loadedmetadata', () => {
         videoElement.play().catch(error => console.error("Autoplay was prevented:", error));
       });
     }
 
-    // Cleanup function to destroy HLS instance when component unmounts or src changes
     return () => {
       if (hls) {
         hls.destroy();

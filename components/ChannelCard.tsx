@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../types';
@@ -13,11 +12,18 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({ channel }) => {
   const navigate = useNavigate();
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Prevent navigation if the favorite button was clicked
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
     navigate(`/channel/${channel.id}`);
+  };
+
+  const formatDisplayTime = (timeStr: string): string => {
+      if (!timeStr || !timeStr.includes(':')) return '...';
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date.toLocaleTimeString(navigator.language, { hour: 'numeric', minute: '2-digit' });
   };
 
   return (
@@ -40,7 +46,7 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({ channel }) => {
           {channel.currentProgram.title}
         </p>
         <p className="text-xs text-brand-text-dim">
-          {channel.currentProgram.startTime} - {channel.currentProgram.endTime}
+          {formatDisplayTime(channel.currentProgram.startTime)} - {formatDisplayTime(channel.currentProgram.endTime)}
         </p>
       </div>
     </div>

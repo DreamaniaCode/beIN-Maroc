@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useChannels } from '../../hooks/useChannels';
 import { Channel } from '../../types';
@@ -6,11 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 interface ChannelFormProps {
   existingChannel: Channel | null;
-  onFormSubmit: (channelData: Omit<Channel, 'id'>) => void;
+  onFormSubmit: (channelData: Omit<Channel, 'id' | 'currentProgram' | 'nextProgram'>) => void;
   onCancel: () => void;
 }
 
-const initialState: Omit<Channel, 'id' | 'currentProgram' | 'nextProgram'> = {
+type FormData = Omit<Channel, 'id' | 'currentProgram' | 'nextProgram'>;
+
+const initialState: FormData = {
   name: '',
   description: '',
   logo: '',
@@ -20,7 +21,7 @@ const initialState: Omit<Channel, 'id' | 'currentProgram' | 'nextProgram'> = {
 };
 
 export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFormSubmit, onCancel }) => {
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState<FormData>(initialState);
   const { categories } = useChannels();
   const { t } = useTranslation();
 
@@ -60,12 +61,7 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const submissionData: Omit<Channel, 'id'> = {
-        ...formData,
-        currentProgram: existingChannel?.currentProgram || { title: 'To be announced', startTime: '', endTime: '' },
-        nextProgram: existingChannel?.nextProgram || { title: 'To be announced', startTime: '', endTime: '' },
-    };
-    onFormSubmit(submissionData);
+    onFormSubmit(formData);
   };
   
   return (
@@ -80,31 +76,31 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
       </div>
       <div>
         <label htmlFor="logo" className="block text-sm font-medium text-brand-text-dim mb-1">{t('logoUrl')}</label>
-        <input type="url" name="logo" id="logo" value={formData.logo} onChange={handleChange} required className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"/>
+        <input type="url" name="logo" id="logo" value={formData.logo} onChange={handleChange} required placeholder="https://placehold.co/400x225" className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"/>
       </div>
       <div>
         <label htmlFor="streamUrl" className="block text-sm font-medium text-brand-text-dim mb-1">{t('streamUrl')}</label>
-        <input type="url" name="streamUrl" id="streamUrl" value={formData.streamUrl} onChange={handleChange} required className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"/>
+        <input type="url" name="streamUrl" id="streamUrl" value={formData.streamUrl} onChange={handleChange} required placeholder="https://test-streams.mux.dev/x36xhzz.m3u8" className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"/>
       </div>
       <div>
         <label className="block text-sm font-medium text-brand-text-dim mb-2">{t('categories')}</label>
         <div className="flex flex-wrap gap-4">
             {categories.map(category => (
-                <label key={category.id} className="flex items-center space-x-2">
-                    <input type="checkbox" checked={formData.categoryIds.includes(category.id)} onChange={() => handleCategoryChange(category.id)} className="form-checkbox h-5 w-5 rounded bg-slate-700 border-slate-600 text-brand-primary focus:ring-brand-primary"/>
+                <label key={category.id} className="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" checked={formData.categoryIds.includes(category.id)} onChange={() => handleCategoryChange(category.id)} className="h-5 w-5 rounded bg-slate-700 border-slate-600 text-brand-primary focus:ring-brand-primary"/>
                     <span>{category.name}</span>
                 </label>
             ))}
         </div>
       </div>
       <div className="flex items-center">
-          <input type="checkbox" name="isLive" id="isLive" checked={formData.isLive} onChange={handleChange} className="form-checkbox h-5 w-5 rounded bg-slate-700 border-slate-600 text-brand-primary focus:ring-brand-primary"/>
-          <label htmlFor="isLive" className="ml-2 block text-sm font-medium text-brand-text-dim">{t('live')}</label>
+          <input type="checkbox" name="isLive" id="isLive" checked={formData.isLive} onChange={handleChange} className="h-5 w-5 rounded bg-slate-700 border-slate-600 text-brand-primary focus:ring-brand-primary"/>
+          <label htmlFor="isLive" className="ml-2 block text-sm font-medium text-brand-text-dim">{t('isLiveChannel')}</label>
       </div>
       <div className="flex justify-end gap-4 pt-4">
           <button type="button" onClick={onCancel} className="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500">{t('cancel')}</button>
           <button type="submit" className="bg-brand-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-sky-400 transition-colors">
-          {t('saveChanges')}
+            {existingChannel ? t('saveChanges') : t('createChannel')}
           </button>
       </div>
     </form>

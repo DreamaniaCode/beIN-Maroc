@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../types';
@@ -15,7 +14,7 @@ export const HeroChannel: React.FC<HeroChannelProps> = ({ channel }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="relative w-full aspect-16/7 bg-brand-surface rounded-lg overflow-hidden group">
+    <div className="relative w-full aspect-video md:aspect-[2.4/1] bg-brand-surface rounded-lg overflow-hidden group">
       <img
         src={channel.logo.replace('400x225', '1280x720')}
         alt={`${channel.name} hero banner`}

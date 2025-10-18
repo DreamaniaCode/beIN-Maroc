@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -47,7 +46,6 @@ export const Header: React.FC = () => {
     <header className="bg-brand-surface sticky top-0 z-40 shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          {/* Left Section: Logo & Nav */}
           <div className="flex items-center space-x-6">
             <button onClick={() => navigate('/')} className="flex items-center space-x-2 text-xl font-bold">
               <Tv className="text-brand-primary" />
@@ -68,7 +66,6 @@ export const Header: React.FC = () => {
             </nav>
           </div>
 
-          {/* Center Section: Search Bar */}
           <div className="flex-1 px-4 lg:px-12 hidden sm:block">
             <form onSubmit={handleSearchSubmit} className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-text-dim pointer-events-none" />
@@ -82,7 +79,6 @@ export const Header: React.FC = () => {
             </form>
           </div>
 
-          {/* Right Section: Auth & Language */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <LanguageSwitcher />
             {user ? (

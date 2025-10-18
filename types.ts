@@ -1,4 +1,3 @@
-// FIX: Implemented missing type definitions for User, Program, Channel, and Category.
 export interface User {
   id: string;
   name: string;
@@ -8,8 +7,8 @@ export interface User {
 
 export interface Program {
   title: string;
-  startTime: string; // e.g., "10:00 AM"
-  endTime: string;   // e.g., "11:00 AM"
+  startTime: string; // "HH:mm" format
+  endTime: string;   // "HH:mm" format
   description?: string;
 }
 

@@ -27,10 +27,7 @@ const SkeletonCarousel = () => (
 export const SkeletonLoader: React.FC = () => {
     return (
         <div>
-            {/* Hero Skeleton */}
-            <div className="aspect-16/7 w-full bg-brand-surface animate-pulse rounded-lg mb-12"></div>
-            
-            {/* Carousels Skeleton */}
+            <div className="w-full aspect-video md:aspect-[2.4/1] bg-brand-surface animate-pulse rounded-lg mb-12"></div>
             <SkeletonCarousel />
             <SkeletonCarousel />
         </div>

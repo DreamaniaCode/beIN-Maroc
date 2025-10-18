@@ -17,10 +17,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate checking for a user in localStorage
     try {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
@@ -33,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error("Failed to parse user from localStorage", error);
       localStorage.removeItem('user');
     } finally {
-      setLoading(false); // Finished loading
+      setLoading(false);
     }
   }, []);
 
@@ -42,7 +41,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (foundUser) {
       localStorage.setItem('user', JSON.stringify(foundUser));
       setUser(foundUser);
-      // Load their favorites
       const storedFavorites = localStorage.getItem(`favorites-${foundUser.id}`);
       setFavorites(storedFavorites ? JSON.parse(storedFavorites) : []);
       return true;

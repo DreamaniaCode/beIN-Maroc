@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useChannels } from '../../hooks/useChannels';
 import { Channel } from '../../types';
@@ -8,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { Edit, Trash2, PlusCircle } from 'lucide-react';
 
 export const ManageChannelsPage: React.FC = () => {
-  // FIX: Destructure addChannel and updateChannel to handle form submissions.
   const { channels, loading, addChannel, updateChannel, deleteChannel } = useChannels();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChannel, setEditingChannel] = useState<Channel | null>(null);
@@ -26,7 +24,7 @@ export const ManageChannelsPage: React.FC = () => {
     setEditingChannel(null);
   };
   
-  const handleFormSubmit = (channelData: Omit<Channel, 'id'>) => {
+  const handleFormSubmit = (channelData: Omit<Channel, 'id' | 'currentProgram' | 'nextProgram'>) => {
     if (editingChannel) {
       updateChannel(editingChannel.id, channelData);
     } else {
@@ -72,7 +70,6 @@ export const ManageChannelsPage: React.FC = () => {
           <thead className="text-xs text-brand-text uppercase bg-slate-700">
             <tr>
               <th scope="col" className="px-6 py-3">{t('name')}</th>
-              <th scope="col" className="px-6 py-3">{t('logoUrl')}</th>
               <th scope="col" className="px-6 py-3">{t('live')}</th>
               <th scope="col" className="px-6 py-3 text-center">{t('actions')}</th>
             </tr>
@@ -80,9 +77,11 @@ export const ManageChannelsPage: React.FC = () => {
           <tbody>
             {channels.map(channel => (
               <tr key={channel.id} className="border-b border-slate-700 hover:bg-slate-800">
-                <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">{channel.name}</th>
-                <td className="px-6 py-4 truncate max-w-xs">{channel.logo}</td>
-                <td className="px-6 py-4">{channel.isLive ? 'Yes' : 'No'}</td>
+                <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap flex items-center gap-3">
+                    <img src={channel.logo} alt={channel.name} className="w-10 h-10 object-contain rounded-md bg-slate-700" />
+                    {channel.name}
+                </th>
+                <td className="px-6 py-4">{channel.isLive ? t('yes') : t('no')}</td>
                 <td className="px-6 py-4 flex justify-center items-center space-x-2 rtl:space-x-reverse">
                   <button onClick={() => handleOpenModal(channel)} className="p-2 hover:bg-slate-700 rounded-full" title={t('edit')}><Edit size={16}/></button>
                   <button onClick={() => openDeleteConfirm(channel)} className="p-2 text-red-500 hover:bg-red-500/20 rounded-full" title={t('delete')}><Trash2 size={16}/></button>
@@ -93,12 +92,11 @@ export const ManageChannelsPage: React.FC = () => {
         </table>
       </div>
 
-      {/* FIX: Pass handleFormSubmit and handleCloseModal to ChannelForm to handle creation/editing. */}
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingChannel ? t('edit') : t('addChannel')}>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingChannel ? t('editChannel') : t('addChannel')}>
         <ChannelForm existingChannel={editingChannel} onFormSubmit={handleFormSubmit} onCancel={handleCloseModal} />
       </Modal>
 
-      <Modal isOpen={isDeleteConfirmOpen} onClose={closeDeleteConfirm} title={t('delete')}>
+      <Modal isOpen={isDeleteConfirmOpen} onClose={closeDeleteConfirm} title={t('deleteChannel')}>
         <div>
           <p className="mb-4">{t('areYouSureDelete', { name: channelToDelete?.name })}</p>
           <p className="text-sm text-brand-text-dim">{t('confirmDelete')}</p>

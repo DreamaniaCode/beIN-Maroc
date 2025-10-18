@@ -1,4 +1,3 @@
-// FIX: Implemented the missing `ProgramForm` component.
 import React, { useState, useEffect } from 'react';
 import { Program } from '../../types';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +10,8 @@ interface ProgramFormProps {
 
 const initialState: Program = {
   title: '',
-  startTime: '',
-  endTime: '',
+  startTime: '12:00',
+  endTime: '13:00',
   description: '',
 };
 
@@ -58,13 +57,13 @@ export const ProgramForm: React.FC<ProgramFormProps> = ({ existingProgram, onFor
         </div>
       </div>
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-brand-text-dim mb-1">{t('description')}</label>
+        <label htmlFor="description" className="block text-sm font-medium text-brand-text-dim mb-1">{t('programDescription')}</label>
         <textarea name="description" id="description" value={formData.description || ''} onChange={handleChange} rows={3} className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"></textarea>
       </div>
       <div className="flex justify-end gap-4 pt-4">
           <button type="button" onClick={onCancel} className="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500">{t('cancel')}</button>
           <button type="submit" className="bg-brand-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-sky-400 transition-colors">
-            {t('saveChanges')}
+            {existingProgram ? t('saveChanges') : t('addProgram')}
           </button>
       </div>
     </form>
