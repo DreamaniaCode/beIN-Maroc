@@ -1,0 +1,5 @@
+{
+  "name": "BeINMaroc",
+  "description": "A modern, responsive live TV streaming web application to watch live channels and sports matches, inspired by platforms like FONNY Live TV and Bein Match.",
+  "requestFramePermissions": []
+}
