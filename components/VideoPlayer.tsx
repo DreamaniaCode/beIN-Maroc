@@ -1,33 +1,42 @@
-
 import React, { useEffect, useRef } from 'react';
+import Hls from 'hls.js';
 
 interface VideoPlayerProps {
   src: string;
 }
 
-// NOTE: Native HLS playback is supported in Safari and some other browsers.
-// For universal support (Chrome, Firefox), a library like HLS.js would be needed to attach to the video element.
-// This component relies on native browser support for simplicity.
-
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-        // You would integrate HLS.js here if needed
-        // For example:
-        // if (Hls.isSupported()) {
-        //   const hls = new Hls();
-        //   hls.loadSource(src);
-        //   hls.attachMedia(videoRef.current);
-        // } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-        //   videoRef.current.src = src;
-        // }
-      videoRef.current.src = src;
-      videoRef.current.addEventListener('loadedmetadata', () => {
-        videoRef.current?.play().catch(error => console.error("Autoplay was prevented:", error));
+    let hls: Hls | null = null;
+    const videoElement = videoRef.current;
+
+    if (!videoElement) {
+      return;
+    }
+
+    if (Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource(src);
+      hls.attachMedia(videoElement);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        videoElement.play().catch(error => console.error("Autoplay was prevented:", error));
+      });
+    } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+      // Native HLS support (e.g., Safari)
+      videoElement.src = src;
+      videoElement.addEventListener('loadedmetadata', () => {
+        videoElement.play().catch(error => console.error("Autoplay was prevented:", error));
       });
     }
+
+    // Cleanup function to destroy HLS instance when component unmounts or src changes
+    return () => {
+      if (hls) {
+        hls.destroy();
+      }
+    };
   }, [src]);
 
   return (

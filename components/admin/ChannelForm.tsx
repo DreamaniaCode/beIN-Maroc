@@ -53,10 +53,12 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
       // The event target can be either an HTMLInputElement or an HTMLTextAreaElement.
       // The 'checked' property only exists on an HTMLInputElement when its type is 'checkbox',
       // so we must check for that to resolve the TypeScript error.
-      if (e.currentTarget instanceof HTMLInputElement && e.currentTarget.type === 'checkbox') {
+      // By assigning e.currentTarget to a variable, we help TypeScript's type narrowing.
+      const target = e.currentTarget;
+      if (target instanceof HTMLInputElement && target.type === 'checkbox') {
         setFormData(prev => ({
           ...prev,
-          [name]: e.currentTarget.checked
+          [name]: target.checked
         }));
       } else {
         setFormData(prev => ({
