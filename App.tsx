@@ -1,28 +1,29 @@
+// FIX: Implemented the main App component with a clearer routing structure.
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { PublicLayout } from './layouts/PublicLayout';
 import { HomePage } from './pages/HomePage';
 import { ChannelPage } from './pages/ChannelPage';
 import { LoginPage } from './pages/LoginPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { SearchPage } from './pages/SearchPage';
-import { AdminRoute } from './AdminRoute';
+import { PublicLayout } from './layouts/PublicLayout';
 import { AdminLayout } from './layouts/AdminLayout';
+import { AdminRoute } from './AdminRoute';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ManageChannelsPage } from './pages/admin/ManageChannelsPage';
 import { ManageUsersPage } from './pages/admin/ManageUsersPage';
 import { ManageSchedulePage } from './pages/admin/ManageSchedulePage';
 
-function App() {
+const App: React.FC = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route element={<PublicLayout />}>
-        <Route index path="/" element={<HomePage />} />
-        <Route path="/channel/:id" element={<ChannelPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<PublicLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="channel/:id" element={<ChannelPage />} />
+        <Route path="favorites" element={<FavoritesPage />} />
+        <Route path="search" element={<SearchPage />} />
+        <Route path="login" element={<LoginPage />} />
       </Route>
 
       {/* Admin Routes */}
@@ -34,9 +35,8 @@ function App() {
           <Route path="schedule" element={<ManageSchedulePage />} />
         </Route>
       </Route>
-
     </Routes>
   );
-}
+};
 
 export default App;

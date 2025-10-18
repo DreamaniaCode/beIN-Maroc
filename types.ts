@@ -1,3 +1,4 @@
+// FIX: Implemented missing type definitions for User, Program, Channel, and Category.
 export interface User {
   id: string;
   name: string;
@@ -5,30 +6,26 @@ export interface User {
   isAdmin: boolean;
 }
 
-export interface Category {
-  id: string;
-  name: string;
-}
-
 export interface Program {
   title: string;
-  startTime: string;
-  endTime: string;
+  startTime: string; // e.g., "10:00 AM"
+  endTime: string;   // e.g., "11:00 AM"
+  description?: string;
 }
 
 export interface Channel {
   id: string;
   name: string;
-  description?: string;
-  logo: string;
+  description: string;
+  logo: string; // URL to the logo
   isLive: boolean;
-  streamUrl: string;
+  streamUrl: string; // URL for the video stream
   categoryIds: string[];
   currentProgram: Program;
   nextProgram: Program;
 }
 
-export interface EpgProgram extends Program {
-    id: string;
-    description: string;
+export interface Category {
+  id: string;
+  name: string;
 }

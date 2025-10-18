@@ -1,69 +1,60 @@
-import { useState, useCallback } from 'react';
-import { EpgProgram } from '../types';
+// FIX: Implemented the missing `useEpgAdmin` hook.
+import { useState, useEffect, useCallback } from 'react';
+import { Program } from '../types';
 import { epgData as mockEpgData } from '../data/epgData';
 
-// In a real app, this would be a more robust in-memory store or a context.
-// For this mock setup, we'll manage the state within the hook.
-let epgDataStore: { [key: string]: EpgProgram[] } = JSON.parse(JSON.stringify(mockEpgData));
+// Simulate API delay
+const API_DELAY = 200;
 
-export const useEpgAdmin = () => {
-  const [epgData, setEpgData] = useState(epgDataStore);
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+// In a real app, this would be a proper state management solution (e.g., Redux, Zustand)
+// or interact with a backend. For this mock, we'll just manage it in memory.
+let epgDataStore = { ...mockEpgData };
 
-  // Function to get programs for a specific channel
-  const getProgramsForChannel = useCallback((channelId: string): EpgProgram[] => {
-    return epgData[channelId] || [];
-  }, [epgData]);
+export const useEpgAdmin = (channelId: string | null) => {
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Function to add a new program
-  const addProgram = useCallback((channelId: string, programData: Omit<EpgProgram, 'id'>) => {
-    // In a real app, you'd generate a proper ID.
-    const newProgram = { ...programData, id: `prog-${Date.now()}` };
-    
-    setEpgData(prevData => {
-      const channelPrograms = prevData[channelId] ? [...prevData[channelId]] : [];
-      channelPrograms.push(newProgram);
-      const newData = { ...prevData, [channelId]: channelPrograms };
-      epgDataStore = newData; // Update "database"
-      return newData;
-    });
-  }, []);
+  useEffect(() => {
+    if (channelId) {
+      setLoading(true);
+      setError(null);
+      setTimeout(() => {
+        try {
+          setPrograms(epgDataStore[channelId] || []);
+        } catch (e) {
+          setError('Failed to load EPG data.');
+        } finally {
+          setLoading(false);
+        }
+      }, API_DELAY);
+    } else {
+      setPrograms([]);
+    }
+  }, [channelId]);
 
-  // Function to update an existing program
-  const updateProgram = useCallback((channelId: string, programId: string, programData: Partial<EpgProgram>) => {
-    setEpgData(prevData => {
-      const channelPrograms = prevData[channelId]?.map(p => 
-        p.id === programId ? { ...p, ...programData } : p
-      );
-      if (channelPrograms) {
-        const newData = { ...prevData, [channelId]: channelPrograms };
-        epgDataStore = newData; // Update "database"
-        return newData;
-      }
-      return prevData;
-    });
-  }, []);
+  const updateProgram = useCallback((index: number, programData: Program) => {
+    if (!channelId) return;
+    const newPrograms = [...programs];
+    newPrograms[index] = programData;
+    epgDataStore[channelId] = newPrograms;
+    setPrograms(newPrograms);
+  }, [channelId, programs]);
 
-  // Function to delete a program
-  const deleteProgram = useCallback((channelId: string, programId: string) => {
-    setEpgData(prevData => {
-      const channelPrograms = prevData[channelId]?.filter(p => p.id !== programId);
-      if (channelPrograms) {
-        const newData = { ...prevData, [channelId]: channelPrograms };
-        epgDataStore = newData; // Update "database"
-        return newData;
-      }
-      return prevData;
-    });
-  }, []);
+  const addProgram = useCallback((programData: Program) => {
+    if (!channelId) return;
+    const newPrograms = [...programs, programData];
+    // A real app should sort by time
+    epgDataStore[channelId] = newPrograms;
+    setPrograms(newPrograms);
+  }, [channelId, programs]);
 
-  return {
-    loading,
-    error,
-    getProgramsForChannel,
-    addProgram,
-    updateProgram,
-    deleteProgram,
-  };
+  const deleteProgram = useCallback((index: number) => {
+    if (!channelId) return;
+    const newPrograms = programs.filter((_, i) => i !== index);
+    epgDataStore[channelId] = newPrograms;
+    setPrograms(newPrograms);
+  }, [channelId, programs]);
+
+  return { programs, loading, error, updateProgram, addProgram, deleteProgram };
 };

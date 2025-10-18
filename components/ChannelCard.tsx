@@ -1,8 +1,9 @@
-<script src="https://cdn.tailwindcss.com"></script>
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../types';
 import { LiveIndicator } from './LiveIndicator';
+import { FavoriteButton } from './FavoriteButton';
 
 interface ChannelCardProps {
   channel: Channel;
@@ -11,32 +12,37 @@ interface ChannelCardProps {
 export const ChannelCard: React.FC<ChannelCardProps> = ({ channel }) => {
   const navigate = useNavigate();
 
-  const handleNavigate = () => {
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Prevent navigation if the favorite button was clicked
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
     navigate(`/channel/${channel.id}`);
   };
 
   return (
-    <button
-      onClick={handleNavigate}
-      aria-label={`View channel ${channel.name}`}
-      className="group block w-full text-left rounded-lg overflow-hidden bg-brand-surface hover:bg-slate-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 focus:ring-offset-brand-bg cursor-pointer"
+    <div 
+      className="bg-brand-surface rounded-lg overflow-hidden shadow-lg hover:shadow-brand-primary/50 transition-shadow duration-300 cursor-pointer group"
+      onClick={handleCardClick}
     >
       <div className="relative">
-        <img 
-          src={channel.logo} 
-          alt={`${channel.name} logo`}
-          className="w-full h-40 object-cover"
-        />
-        {/* Enhancement: Add a subtle overlay on hover to make text pop more */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute top-2 right-2">
+        <img src={channel.logo} alt={`${channel.name} logo`} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+        <div className="absolute top-2 left-2">
           <LiveIndicator isLive={channel.isLive} />
+        </div>
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <FavoriteButton channelId={channel.id} />
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-brand-text truncate">{channel.name}</h3>
-        <p className="text-sm text-brand-text-dim truncate">{channel.currentProgram.title}</p>
+        <h3 className="font-bold text-lg truncate text-brand-text" title={channel.name}>{channel.name}</h3>
+        <p className="text-sm text-brand-text-dim truncate" title={channel.currentProgram.title}>
+          {channel.currentProgram.title}
+        </p>
+        <p className="text-xs text-brand-text-dim">
+          {channel.currentProgram.startTime} - {channel.currentProgram.endTime}
+        </p>
       </div>
-    </button>
+    </div>
   );
 };

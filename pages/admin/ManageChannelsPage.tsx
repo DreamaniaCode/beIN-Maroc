@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useChannels } from '../../hooks/useChannels';
 import { Channel } from '../../types';
@@ -7,7 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { Edit, Trash2, PlusCircle } from 'lucide-react';
 
 export const ManageChannelsPage: React.FC = () => {
-  const { channels, loading, deleteChannel } = useChannels();
+  // FIX: Destructure addChannel and updateChannel to handle form submissions.
+  const { channels, loading, addChannel, updateChannel, deleteChannel } = useChannels();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChannel, setEditingChannel] = useState<Channel | null>(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -24,6 +26,15 @@ export const ManageChannelsPage: React.FC = () => {
     setEditingChannel(null);
   };
   
+  const handleFormSubmit = (channelData: Omit<Channel, 'id'>) => {
+    if (editingChannel) {
+      updateChannel(editingChannel.id, channelData);
+    } else {
+      addChannel(channelData);
+    }
+    handleCloseModal();
+  };
+
   const openDeleteConfirm = (channel: Channel) => {
     setChannelToDelete(channel);
     setIsDeleteConfirmOpen(true);
@@ -82,8 +93,9 @@ export const ManageChannelsPage: React.FC = () => {
         </table>
       </div>
 
+      {/* FIX: Pass handleFormSubmit and handleCloseModal to ChannelForm to handle creation/editing. */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingChannel ? t('edit') : t('addChannel')}>
-        <ChannelForm existingChannel={editingChannel} onFormSubmit={handleCloseModal} />
+        <ChannelForm existingChannel={editingChannel} onFormSubmit={handleFormSubmit} onCancel={handleCloseModal} />
       </Modal>
 
       <Modal isOpen={isDeleteConfirmOpen} onClose={closeDeleteConfirm} title={t('delete')}>

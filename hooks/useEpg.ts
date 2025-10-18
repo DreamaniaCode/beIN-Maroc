@@ -1,40 +1,43 @@
+// FIX: Implemented the missing `useEpg` hook.
 import { useState, useEffect } from 'react';
-import { EpgProgram } from '../types';
+import { Program } from '../types';
 import { epgData } from '../data/epgData';
 
+// Simulate API delay
+const API_DELAY = 300;
+
 export const useEpg = (channelId: string | undefined) => {
-  const [programs, setPrograms] = useState<EpgProgram[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+    
     if (!channelId) {
         setPrograms([]);
         setLoading(false);
         return;
     }
-    
-    const fetchEpgData = async () => {
-      setLoading(true);
-      setError(null);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
-
+    // Simulate fetching data from an API
+    setTimeout(() => {
       try {
-        // In a real app, you would fetch this data from an API
-        // e.g., const response = await fetch(`/api/epg/${channelId}`);
-        const data = epgData[channelId] || [];
-        setPrograms(data);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-        setError(`Failed to load EPG data. ${errorMessage}`);
+        const data = epgData[channelId];
+        if (data) {
+          setPrograms(data);
+        } else {
+          // No data for this channel, which is not an error, just empty
+          setPrograms([]);
+        }
+      } catch (e) {
+        setError('Failed to load EPG data.');
+        console.error(e);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchEpgData();
+    }, API_DELAY);
   }, [channelId]);
 
   return { programs, loading, error };

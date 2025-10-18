@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -8,6 +9,7 @@ import { Tv, Search, User, LogOut, Star, LayoutDashboard, ChevronDown } from 'lu
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -33,9 +35,13 @@ export const Header: React.FC = () => {
     };
   }, []);
 
-  const linkClasses = "px-3 py-2 rounded-md text-sm font-medium transition-colors";
-  const activeLinkClass = "bg-brand-primary text-white";
-  const inactiveLinkClass = "text-brand-text-dim hover:bg-slate-700 hover:text-brand-text";
+  const getLinkClass = (path: string, isEnd: boolean = false) => {
+    const isActive = isEnd ? location.pathname === path : location.pathname.startsWith(path);
+    const baseClasses = "px-3 py-2 rounded-md text-sm font-medium transition-colors";
+    const activeClasses = "bg-brand-primary text-white";
+    const inactiveClasses = "text-brand-text-dim hover:bg-slate-700 hover:text-brand-text";
+    return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+  };
 
   return (
     <header className="bg-brand-surface sticky top-0 z-40 shadow-md">
@@ -43,28 +49,21 @@ export const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Left Section: Logo & Nav */}
           <div className="flex items-center space-x-6">
-            <Link to="/" className="flex items-center space-x-2 text-xl font-bold">
+            <button onClick={() => navigate('/')} className="flex items-center space-x-2 text-xl font-bold">
               <Tv className="text-brand-primary" />
               <span>{t('appName')}</span>
-            </Link>
+            </button>
             <nav className="hidden md:flex items-center space-x-2">
-              <NavLink 
-                to="/" 
-                end
-                className={({ isActive }) => `${linkClasses} ${isActive ? activeLinkClass : inactiveLinkClass}`}
-              >
+              <button onClick={() => navigate('/')} className={getLinkClass('/', true)}>
                 {t('home')}
-              </NavLink>
+              </button>
               {user && (
-                <NavLink 
-                  to="/favorites" 
-                  className={({ isActive }) => `${linkClasses} ${isActive ? activeLinkClass : inactiveLinkClass}`}
-                >
+                <button onClick={() => navigate('/favorites')} className={getLinkClass('/favorites')}>
                   <div className="flex items-center gap-1.5">
                     <Star size={16}/>
                     {t('myFavorites')}
                   </div>
-                </NavLink>
+                </button>
               )}
             </nav>
           </div>
@@ -98,14 +97,13 @@ export const Header: React.FC = () => {
                 {isDropdownOpen && (
                   <div className="absolute top-full right-0 mt-2 w-48 bg-slate-700 rounded-md shadow-lg py-1 z-50">
                     {user.isAdmin && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setIsDropdownOpen(false)}
+                      <button
+                        onClick={() => { navigate('/admin'); setIsDropdownOpen(false); }}
                         className="flex items-center w-full px-4 py-2 text-sm text-brand-text-dim hover:bg-slate-600"
                       >
                         <LayoutDashboard size={16} className="mr-2" />
                         {t('adminDashboard')}
-                      </Link>
+                      </button>
                     )}
                     <button
                       onClick={() => {
@@ -121,10 +119,10 @@ export const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="flex items-center space-x-2 px-3 py-2 rounded-lg font-semibold bg-brand-surface hover:bg-slate-700 text-brand-text-dim transition-colors">
+              <button onClick={() => navigate('/login')} className="flex items-center space-x-2 px-3 py-2 rounded-lg font-semibold bg-brand-surface hover:bg-slate-700 text-brand-text-dim transition-colors">
                 <User className="w-5 h-5" />
                 <span className="hidden sm:inline">{t('login')}</span>
-              </Link>
+              </button>
             )}
           </div>
         </div>
