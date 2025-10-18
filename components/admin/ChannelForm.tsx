@@ -49,9 +49,10 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
         }));
       }
     } else {
-      // FIX: Use `instanceof` check first for proper type guarding in TypeScript.
-      // This ensures `e.currentTarget` is narrowed to HTMLInputElement before its
-      // `type` and `checked` properties are accessed, resolving the type error.
+      // Fix: Use a type guard to safely access the 'checked' property for checkboxes.
+      // The event target can be either an HTMLInputElement or an HTMLTextAreaElement.
+      // The 'checked' property only exists on an HTMLInputElement when its type is 'checkbox',
+      // so we must check for that to resolve the TypeScript error.
       if (e.currentTarget instanceof HTMLInputElement && e.currentTarget.type === 'checkbox') {
         setFormData(prev => ({
           ...prev,

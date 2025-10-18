@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { Tv, Search, User, LogOut, Star } from 'lucide-react';
+import { Tv, Search, User, LogOut, Star, LayoutDashboard, ChevronDown } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +20,18 @@ export const Header: React.FC = () => {
       setSearchQuery('');
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const linkClasses = "px-3 py-2 rounded-md text-sm font-medium transition-colors";
   const activeLinkClass = "bg-brand-primary text-white";
@@ -73,15 +87,38 @@ export const Header: React.FC = () => {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <LanguageSwitcher />
             {user ? (
-              <div className="flex items-center space-x-3">
-                <span className="hidden lg:inline text-sm font-medium">{user.name}</span>
-                <button 
-                  onClick={logout}
-                  title={t('logout')}
-                  className="p-2 rounded-full text-brand-text-dim hover:bg-slate-700 transition-colors"
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-slate-700 transition-colors"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <span className="hidden lg:inline text-sm font-medium">{user.name}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
+                {isDropdownOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-slate-700 rounded-md shadow-lg py-1 z-50">
+                    {user.isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex items-center w-full px-4 py-2 text-sm text-brand-text-dim hover:bg-slate-600"
+                      >
+                        <LayoutDashboard size={16} className="mr-2" />
+                        {t('adminDashboard')}
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsDropdownOpen(false);
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-brand-text-dim hover:bg-slate-600"
+                    >
+                      <LogOut size={16} className="mr-2" />
+                      {t('logout')}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link to="/login" className="flex items-center space-x-2 px-3 py-2 rounded-lg font-semibold bg-brand-surface hover:bg-slate-700 text-brand-text-dim transition-colors">

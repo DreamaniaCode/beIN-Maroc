@@ -3,6 +3,7 @@ import { User, Category, Channel } from '../types';
 export const users: User[] = [
   { id: '1', name: 'Alex (Admin)', email: 'alex@example.com', isAdmin: true },
   { id: '2', name: 'Jane Doe', email: 'jane@example.com', isAdmin: false },
+  { id: '3', name: 'Khalid (Admin)', email: 'khalid@example.com', isAdmin: true },
 ];
 
 export const categories: Category[] = [
