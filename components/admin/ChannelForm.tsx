@@ -34,9 +34,6 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
     }
   }, [existingChannel]);
   
-  // FIX: Replaced 'any' cast with a type guard for type safety.
-  // This improves type safety and likely resolves a TypeScript inference issue
-  // that was causing an error to be reported on the wrong line.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
     
@@ -52,7 +49,10 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
         }));
       }
     } else {
-      if (e.currentTarget.type === 'checkbox' && e.currentTarget instanceof HTMLInputElement) {
+      // FIX: Use `instanceof` check first for proper type guarding in TypeScript.
+      // This ensures `e.currentTarget` is narrowed to HTMLInputElement before its
+      // `type` and `checked` properties are accessed, resolving the type error.
+      if (e.currentTarget instanceof HTMLInputElement && e.currentTarget.type === 'checkbox') {
         setFormData(prev => ({
           ...prev,
           [name]: e.currentTarget.checked
@@ -67,7 +67,6 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
   };
   
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // FIX: Explicitly type `option` as HTMLOptionElement to resolve a potential type inference issue.
     const selectedOptions = Array.from(e.currentTarget.selectedOptions, (option: HTMLOptionElement) => option.value);
     setFormData(prev => ({ ...prev, categoryIds: selectedOptions }));
   };
@@ -119,7 +118,10 @@ export const ChannelForm: React.FC<ChannelFormProps> = ({ existingChannel, onFor
         <label htmlFor="description" className="block text-sm font-medium text-brand-text-dim mb-1">{t('channelDescription')}</label>
         <textarea name="description" id="description" value={formData.description || ''} onChange={handleChange} rows={3} className="w-full bg-slate-800 border border-slate-600 rounded-md p-2 focus:ring-brand-primary focus:border-brand-primary"></textarea>
       </div>
+      
+      {/* FIX: Added the missing Stream URL field */}
       {renderTextField('streamUrl', t('streamUrl'))}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <label htmlFor="categoryIds" className="block text-sm font-medium text-brand-text-dim mb-1">{t('categories')}</label>
