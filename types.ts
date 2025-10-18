@@ -1,4 +1,14 @@
-// types.ts
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+}
 
 export interface Program {
   title: string;
@@ -18,14 +28,7 @@ export interface Channel {
   nextProgram: Program;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  isAdmin: boolean;
-}
-
-export interface Category {
-  id: string;
-  name: string;
+export interface EpgProgram extends Program {
+    id: string;
+    description: string;
 }

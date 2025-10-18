@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Tv, Users } from 'lucide-react'; // Using a library for icons
+import { Home, Tv, Users, Calendar } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
     const { t } = useTranslation();
@@ -11,10 +11,11 @@ export const AdminLayout: React.FC = () => {
         { to: '/admin', text: t('dashboard'), icon: <Home size={20} /> },
         { to: '/admin/channels', text: t('channels'), icon: <Tv size={20} /> },
         { to: '/admin/users', text: t('users'), icon: <Users size={20} /> },
+        { to: '/admin/schedule', text: t('schedule'), icon: <Calendar size={20} /> },
     ];
     
     const getLinkClass = (path: string) => {
-        const isActive = location.pathname === path;
+        const isActive = location.pathname.startsWith(path) && (path !== '/admin' || location.pathname === '/admin');
         return `flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 rounded-lg font-medium transition-colors ${
             isActive ? 'bg-brand-primary text-white' : 'text-brand-text-dim hover:bg-slate-700 hover:text-brand-text'
         }`;
