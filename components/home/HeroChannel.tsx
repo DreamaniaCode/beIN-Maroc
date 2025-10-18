@@ -24,8 +24,13 @@ export const HeroChannel: React.FC<HeroChannelProps> = ({ channel }) => {
       onClick={handleNavigate}
       aria-label={`View featured channel: ${channel.name}`}
     >
-      <div className="aspect-16/7 w-full">
-        <img src={channel.logo.replace('400x225', '1200x525')} alt={`${channel.name} promotional art`} className="w-full h-full object-cover" />
+      {/* Enhancement: Add overflow-hidden and a hover zoom effect to the image */}
+      <div className="aspect-16/7 w-full overflow-hidden">
+        <img 
+          src={channel.logo.replace('400x225', '1200x525')} 
+          alt={`${channel.name} promotional art`} 
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out" 
+        />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent"></div>

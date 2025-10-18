@@ -27,6 +27,8 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({ channel }) => {
           alt={`${channel.name} logo`}
           className="w-full h-40 object-cover"
         />
+        {/* Enhancement: Add a subtle overlay on hover to make text pop more */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute top-2 right-2">
           <LiveIndicator isLive={channel.isLive} />
         </div>
